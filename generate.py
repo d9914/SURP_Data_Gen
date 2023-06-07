@@ -4,7 +4,7 @@ import sympy as sp
 from scipy import integrate
 import pickle
 
-# Step 1: Calculate x,y
+# Step 1: Calculate x, y
 
 mass_start = 0.8 * 2.0e33   # Starting mass
 mass_stop = 1.4 * 2.0e33    # Ending mass
@@ -33,6 +33,8 @@ nickel = 7.605*(10**5)  # Nickel
 b = 13.7
 k = 0.02
 
+# Dictionary to store the calculated values with their corresponding (x, y) pairs
+data = {}
 
 for m in masses:
     to = (k * m) / b
@@ -42,22 +44,15 @@ for m in masses:
         tm = math.sqrt(2 * (to * th))
         for t in time:
             t = t * 24 * 60 * 60  # convert days to seconds
-            x.append(t / (tm))
-            y.append(tm / (2 * nickel))
+            x_val = t / tm
+            y_val = tm / (2 * nickel)
 
-# Step 2: Integrate
+            result = integrate.quad(
+                lambda z, y: np.exp(-2 * z * y + z**2) * 2 * z, 0, x_val, args=(y_val,))[0]
+            result *= np.exp(-x_val**2)  # multiply by e^-x^2
 
-
-def f(z, y):
-    return np.exp(-2 * z * y + z**2) * 2 * z  # Define function
-
-
-final = []
-for x_val, y_val in zip(x, y):
-    result, err = integrate.quad(f, 0, x_val, args=(y_val,))
-    result *= np.exp(-x_val**2)  # multiply by e^-x^2
-    final.append(result)
+            data[(x_val, y_val)] = result
 
 # Step 3: Output Values to Pickle
 with open('results.pickle', 'wb') as file:
-    pickle.dump(final, file)
+    pickle.dump(data, file)
