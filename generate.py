@@ -32,12 +32,13 @@ y = []
 nickel = 7.605*(10**5)  # Nickel
 b = 13.7
 k = 0.02
+c = 3 * 10**8
 
 # Dictionary to store the calculated values with their corresponding (x, y) pairs
 data = {}
 
 for m in masses:
-    to = (k * m) / b
+    to = (k * m) / (b*c)
     for e in energy:
         vsc = math.sqrt(2 * e / m)
         th = 1 / vsc
