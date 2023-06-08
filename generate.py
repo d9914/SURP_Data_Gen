@@ -6,9 +6,9 @@ import pickle
 
 # Step 1: Calculate x, y
 
-mass_start = 0.8 * 2.0e33   # Starting mass
-mass_stop = 1.4 * 2.0e33    # Ending mass
-mass_step = 0.1 * 2.0e33    # Mass increment
+mass_start = 0.8 * 2.0e30   # Starting mass
+mass_stop = 1.4 * 2.0e30    # Ending mass
+mass_step = 0.1 * 2.0e30    # Mass increment
 
 masses = np.arange(mass_start, mass_stop, mass_step)  # List of masses
 
