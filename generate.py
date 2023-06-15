@@ -30,9 +30,9 @@ y = []
 
 
 nickel = 7.605*(10**5)  # Nickel
-b = 13.7
-k = 0.02
-c = 3 * 10**8
+b = 13.7        # 
+k = 0.02      # Kinetic Energy 
+c = 3 * 10**8    # Speed of Light
 
 # Dictionary to store the calculated values with their corresponding (x, y) pairs
 data = {}
