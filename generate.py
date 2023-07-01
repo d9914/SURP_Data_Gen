@@ -3,6 +3,7 @@ import numpy as np
 import sympy as sp
 from scipy import integrate
 import pickle
+import csv
 
 # Step 1: Calculate x, y
 
@@ -37,6 +38,8 @@ c = 3 * 10**8    # Speed of Light
 # Dictionary to store the calculated values with their corresponding (x, y) pairs, data_graph stores result and days
 data = {}
 data_graph={}
+data_rows = []
+
 
 for m in masses:
     to = (k * m) / (b * c)
@@ -56,11 +59,21 @@ for m in masses:
             result *= np.exp(-x_val ** 2)  # multiply by e^-x^2
             data[(x_val, y_val)] = result
             data_graph[time_original] = result
+            data_rows.append([x_val, y_val, result])
 
 # Step 3: Output Values to Pickle
-with open('results_with_time.pickle', 'wb') as file:
-    pickle.dump(data_graph, file)
+#with open('results_with_time.pickle', 'wb') as file:
+    #pickle.dump(data_graph, file)
 
 
 #with open('results.pickle', 'wb') as file:
     #pickle.dump(data, file)
+
+csv_filename = 'results.csv'
+
+with open(csv_filename, 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['x_val', 'y_val', 'result'])  # Write header row
+    writer.writerows(data_rows)
+
+print(f"Data has been saved to {csv_filename}")
