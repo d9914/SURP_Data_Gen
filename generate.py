@@ -1,6 +1,5 @@
 import math
 import numpy as np
-import sympy as sp
 from scipy import integrate
 import pickle
 import csv
@@ -9,19 +8,19 @@ import csv
 
 mass_start = 0.8 * 2.0e30   # Starting mass
 mass_stop = 1.4 * 2.0e30    # Ending mass
-mass_step = 0.1 * 2.0e30    # Mass increment
+mass_step = 0.05 * 2.0e30    # Mass increment
 
 masses = np.arange(mass_start, mass_stop, mass_step)  # List of masses
 
 energy_start = 10**43       # Staring energy
 energy_end = 10**44         # Ending energy
-energy_step = 3*(10**43)    # Energy increment
+energy_step = 1*(10**43)    # Energy increment
 
 energy = np.arange(energy_start,  energy_end, energy_step)  # List of Energy
 
-time_start = 0.5   # Starting time
+time_start = 0.1   # Starting time
 time_stop = 40     # Ending time
-time_step = 0.5    # Time increment
+time_step = 0.1    # Time increment
 
 time = np.arange(time_start, time_stop, time_step)     # List of time
 
@@ -37,9 +36,7 @@ c = 3 * 10**8    # Speed of Light
 
 # Dictionary to store the calculated values with their corresponding (x, y) pairs, data_graph stores result and days
 data = {}
-data_graph={}
-data_rows = []
-
+data_2={}
 
 for m in masses:
     to = (k * m) / (b * c)
@@ -53,13 +50,36 @@ for m in masses:
             x_val = t / tm
             y_val = tm / (2 * nickel)
 
+            if (m, e) not in data:
+                data[(m, e)] = []
+
             result = integrate.quad(
                 lambda z, y: np.exp(-2 * z * y + z ** 2) * 2 * z, 0, x_val, args=(y_val,)
             )[0]
             result *= np.exp(-x_val ** 2)  # multiply by e^-x^2
-            data[(x_val, y_val)] = result
-            data_graph[time_original] = result
-            data_rows.append([x_val, y_val, result])
+            data[(m, e)].append(result)
+           
+            if (m, e) not in data_2:
+                data_2[(m, e)] = []
+            data_2[(m, e)].append(time_original)
+
+        peak=max(data[(m,e)])
+        #for d, l in zip(data_2[(m,e)], data[(m,e)]):
+            
+
+        ds=data_2[(m,e)]
+        ls=data[(m,e)]
+        
+        for i in range(len(ds)-1):
+            if ls[i]==peak:
+                peak_day=ds[i]
+            if ls[i+1]<peak/2 and ls[i]>peak/2:
+                peak_day_low=(ds[i]+ds[i+1])/2
+
+        
+        ds=peak_day_low-peak_day
+        data[(m,e)]=(peak, ds)
+      
 
 # Step 3: Output Values to Pickle
 #with open('results_with_time.pickle', 'wb') as file:
@@ -69,11 +89,12 @@ for m in masses:
 #with open('results.pickle', 'wb') as file:
     #pickle.dump(data, file)
 
-csv_filename = 'results.csv'
+csv_filename = 'data.csv'
 
 with open(csv_filename, 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
-    writer.writerow(['x_val', 'y_val', 'result'])  # Write header row
-    writer.writerows(data_rows)
+    writer.writerow(['mass', 'energy', 'peak', 'ds'])  # Write header row
+    for k, v in data.items():
+        writer.writerow([k[0], k[1], v[0], v[1]])
 
 print(f"Data has been saved to {csv_filename}")
