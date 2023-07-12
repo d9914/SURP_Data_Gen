@@ -8,13 +8,13 @@ import csv
 
 mass_start = 0.8 * 2.0e30   # Starting mass
 mass_stop = 1.4 * 2.0e30    # Ending mass
-mass_step = 0.05 * 2.0e30    # Mass increment
+mass_step = 0.01 * 2.0e30    # Mass increment
 
 masses = np.arange(mass_start, mass_stop, mass_step)  # List of masses
 
 energy_start = 10**43       # Staring energy
 energy_end = 10**44         # Ending energy
-energy_step = 1*(10**43)    # Energy increment
+energy_step = .5*(10**43)    # Energy increment
 
 energy = np.arange(energy_start,  energy_end, energy_step)  # List of Energy
 
@@ -95,6 +95,6 @@ with open(csv_filename, 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(['mass', 'energy', 'peak', 'ds'])  # Write header row
     for k, v in data.items():
-        writer.writerow([k[0], k[1], v[0], v[1]])
+        writer.writerow([k[0], float(k[1]), v[0], v[1]])
 
 print(f"Data has been saved to {csv_filename}")
