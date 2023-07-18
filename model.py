@@ -19,7 +19,7 @@ X_scaled = scaler.transform(X)
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_mass, test_size=0.2, random_state=42)
 
 # Create and train the MLPRegressor model
-model = MLPRegressor(hidden_layer_sizes=(100,), random_state=1, max_iter=500)
+model = MLPRegressor(hidden_layer_sizes=(50, 50), random_state=1, max_iter=500)
 model.fit(X_train, y_train)
 
 # Make predictions on the test set
@@ -51,8 +51,8 @@ print(f"Mass Average Percentage Difference: {avg_percentage_diff:.2f}%")
 y_energy= data['energy'].values / 1e43 
 
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_energy, test_size=0.2, random_state=42)
-
-model = MLPRegressor(hidden_layer_sizes=(100,), random_state=1, max_iter=500)
+layer=(50,50)
+model = MLPRegressor(hidden_layer_sizes=(layer), random_state=1, max_iter=500)
 model.fit(X_train, y_train)
 
 # Make predictions on the test set
@@ -60,8 +60,8 @@ y_pred = model.predict(X_test)
 
 
 # Print the predicted mass values for the test set
-#for i, y_pred_i in enumerate(y_pred):
-    #print(f"Predicted mass for test data point {i+1}: {y_pred_i}, {y_mass[i]}")
+for i, y_pred_i in enumerate(y_pred):
+    print(f"Predicted energy {layer} layer, for test data point {i+1}: {y_pred[i]}, {y_energy[i]}")
 
 # Calculate the percentage difference
 percentage_diff = (y_pred - y_test) / y_test * 100
