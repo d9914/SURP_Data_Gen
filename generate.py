@@ -8,13 +8,13 @@ import csv
 
 mass_start = 0.8 * 2.0e30   # Starting mass
 mass_stop = 1.4 * 2.0e30    # Ending mass
-mass_step = 0.01 * 2.0e30    # Mass increment
+mass_step = 0.1 * 2.0e30    # Mass increment
 
 masses = np.arange(mass_start, mass_stop, mass_step)  # List of masses
 
 energy_start = 10**43       # Staring energy
 energy_end = 10**44         # Ending energy
-energy_step = .5*(10**43)    # Energy increment
+energy_step = 1*(10**43)    # Energy increment
 
 energy = np.arange(energy_start,  energy_end, energy_step)  # List of Energy
 
@@ -35,8 +35,10 @@ k = 0.02      # Kinetic Energy
 c = 3 * 10**8    # Speed of Light
 
 # Dictionary to store the calculated values with their corresponding (x, y) pairs, data_graph stores result and days
-data = {}
-data_2={}
+#data = {}
+#data_2={}
+
+curves={}
 
 for m in masses:
     to = (k * m) / (b * c)
@@ -50,27 +52,43 @@ for m in masses:
             x_val = t / tm
             y_val = tm / (2 * nickel)
 
-            if (m, e) not in data:
-                data[(m, e)] = []
+            if (m, e) not in curves:
+                curves[(m, e)] = []
 
             result = integrate.quad(
                 lambda z, y: np.exp(-2 * z * y + z ** 2) * 2 * z, 0, x_val, args=(y_val,)
             )[0]
             result *= np.exp(-x_val ** 2)  # multiply by e^-x^2
-            data[(m, e)].append(result)
+            curves[(m, e)].append(result)
            
-            if (m, e) not in data_2:
-                data_2[(m, e)] = []
-            data_2[(m, e)].append(time_original)
+            if (m, e) not in curves:
+                curves[(m, e)] = []
+            curves[(m, e)].append(time_original)
+# Specify the filename for the CSV file
+csv_filename = "curves_data.csv"
 
-        peak=max(data[(m,e)])
+
+# Write the 'curves' dictionary to the CSV file
+with open(csv_filename, mode="w", newline="") as file:
+    writer = csv.writer(file)
+
+    # Write the header row (column names)
+    writer.writerow(["Mass (m)", "Energy (e)", "Results", "Time"])
+
+    # Write the data rows
+    for key, value in curves.items():
+        m, e = key
+        for result, time_val in zip(value, value[len(value) // 2:]):
+            writer.writerow([m, e, result, time_val])
+
+        #peak=max(data[(m,e)])
         #for d, l in zip(data_2[(m,e)], data[(m,e)]):
             
 
-        ds=data_2[(m,e)]
-        ls=data[(m,e)]
+        #ds=data_2[(m,e)]
+        #ls=data[(m,e)]
         
-        for i in range(len(ds)-1):
+        """for i in range(len(ds)-1):
             if ls[i]==peak:
                 peak_day=ds[i]
             if ls[i+1]<peak/2 and ls[i]>peak/2:
@@ -78,7 +96,7 @@ for m in masses:
 
         
         ds=peak_day_low-peak_day
-        data[(m,e)]=(peak, ds)
+        data[(m,e)]=(peak, ds)"""
       
 
 # Step 3: Output Values to Pickle
@@ -89,7 +107,7 @@ for m in masses:
 #with open('results.pickle', 'wb') as file:
     #pickle.dump(data, file)
 
-csv_filename = 'data.csv'
+"""csv_filename = 'data.csv'
 
 with open(csv_filename, 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
@@ -97,4 +115,4 @@ with open(csv_filename, 'w', newline='') as csvfile:
     for k, v in data.items():
         writer.writerow([k[0], float(k[1]), v[0], v[1]])
 
-print(f"Data has been saved to {csv_filename}")
+print(f"Data has been saved to {csv_filename}")"""
